@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1">
+	<title>WebRTC</title>
+	<script src="js/jquery.min.js"></script>
+
+	<style type="text/css">
+		#content {
+			width: 600px;
+		}
+		.panel {
+			border: 1px solid #cccccc;
+			padding:4px;
+			background-color: #f2f2f2;
+		}
+		.hidden {
+			display: none;
+		}
+		#actions {
+			float: right;
+		}
+	</style>
+</head>
+<body>
+
+<div id="content">
+
+	<h1>WebRTC Experiments</h1>
+
+	<p>
+		Right now it's just in the get-clients-to-talk-to-one-another-via-the-server mode; i.e. creating
+		a signalling server to handle client handshakes. WebRTC bit comes shortly.
+	</p>
+
+	<section class="panel">
+		<div id="actions">
+			<input type="button" id="joinRoom" value="Join" />
+			<input type="button" id="leaveRoom" class="hidden" value="Leave" />
+		</div>
+
+		<div>
+			Your name: <input type="text" id="userName" value="Ben" />
+		</div>
+		<div>
+			Join room: <input type="text" id="roomName" value="1" />
+		</div>
+
+		<div id="peopleInRoom" class="hidden">
+			<hr size="1" style="clear: both" />
+			People in room: <span id="people"></span>
+		</div>
+	</section>
+
+	<br />
+
+	<div style="clear: both">
+		<textarea id="source" style="height: 80px;">Hello.</textarea>
+		<input type="button" value="Send" />
+	</div>
+
+	<div id="fullText" style="border: 1px solid #555555; height: 200px;"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/serverConnection.js"></script>
+
+</body>
+</html>
