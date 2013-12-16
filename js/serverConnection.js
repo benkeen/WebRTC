@@ -8,6 +8,11 @@
 	var _peopleOnline = [];
 
 	var _init = function() {
+		_addGeneralEventHandlers();
+		_addTextConversationEventHandlers();
+	};
+
+	var _addGeneralEventHandlers = function() {
 		$("#joinRoom").on("click", function() {
 			_roomName = $("#roomName").val();
 			_userName = $("#userName").val();
@@ -33,6 +38,13 @@
 			});
 			$("#joinRoom").removeClass("hidden");
 			$("#leaveRoom").addClass("hidden");
+		});
+	};
+
+	var _addTextConversationEventHandlers = function() {
+		$("#sendMessage").on("click", function() {
+			var message = $("#message").val();
+			_sendMessage(message);
 		});
 	};
 
@@ -82,6 +94,88 @@
 		$("#people").html(_peopleOnline.join(", "));
 		$("#peopleInRoom").removeClass("hidden");
 	};
+
+
+	// ----------------------------------------------------------------------------------------------------------
+
+	// TEXT conversation through WebRTC
+
+	var _sendMessage = function(message) {
+		_socket.emit("message", {
+			room: _roomName,
+			user: _userName,
+			message: message
+		});
+	};
+
+	_socket.on("message", function(message){
+		console.log('Received message... still from server at this point', message);
+
+		/*
+
+		// seems to be audio or video
+		if (message === 'got user media') {
+			maybeStart();
+
+
+		} else if (message.type === 'offer') {
+			if (!isInitiator && !isStarted) {
+				maybeStart();
+			}
+			pc.setRemoteDescription(new RTCSessionDescription(message));
+			doAnswer();
+		} else if (message.type === 'answer' && isStarted) {
+			pc.setRemoteDescription(new RTCSessionDescription(message));
+		} else if (message.type === 'candidate' && isStarted) {
+			var candidate = new RTCIceCandidate({sdpMLineIndex:message.label,
+				candidate:message.candidate});
+			pc.addIceCandidate(candidate);
+		} else if (message === 'bye' && isStarted) {
+			handleRemoteHangup();
+		}
+		*/
+	});
+
+	var _maybeStart = function() {
+
+	};
+
+	var _createPeerConnection = function() {
+		try {
+			pc = new RTCPeerConnection(pc_config, pc_constraints);
+			pc.onicecandidate = handleIceCandidate;
+			console.log('Created RTCPeerConnnection with:\n' +
+				'  config: \'' + JSON.stringify(pc_config) + '\';\n' +
+				'  constraints: \'' + JSON.stringify(pc_constraints) + '\'.');
+		} catch (e) {
+			console.log('Failed to create PeerConnection, exception: ' + e.message);
+			alert('Cannot create RTCPeerConnection object.');
+			return;
+		}
+		pc.onaddstream    = handleRemoteStreamAdded;
+		pc.onremovestream = handleRemoteStreamRemoved;
+
+		if (isInitiator) {
+			try {
+				// Reliable Data Channels not yet supported in Chrome
+				sendChannel = pc.createDataChannel("sendDataChannel",
+					{reliable: false});
+				trace('Created send data channel');
+			} catch (e) {
+				alert('Failed to create data channel. ' +
+					'You need Chrome M25 or later with RtpDataChannel enabled');
+				trace('createDataChannel() failed with exception: ' + e.message);
+			}
+			sendChannel.onopen = handleSendChannelStateChange;
+			sendChannel.onclose = handleSendChannelStateChange;
+		} else {
+			pc.ondatachannel = gotReceiveChannel;
+		}
+	}
+
+
+	// ----------------------------------------------------------------------------------------------------------
+
 
 	_init();
 

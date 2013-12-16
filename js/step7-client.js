@@ -16,13 +16,13 @@ var remoteStream;
 var turnReady;
 
 var pc_config = webrtcDetectedBrowser === 'firefox' ?
-{'iceServers':[{'url':'stun:23.21.150.121'}]} : // number IP
-{'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+	{ 'iceServers': [{'url':'stun:23.21.150.121'}] } : // number IP
+	{ 'iceServers': [{'url': 'stun:stun.l.google.com:19302'}] };
 
 var pc_constraints = {
 	'optional': [
-		{'DtlsSrtpKeyAgreement': true},
-		{'RtpDataChannels': true}
+		{ 'DtlsSrtpKeyAgreement': true },
+		{ 'RtpDataChannels': true }
 	]};
 
 // Set up audio and video regardless of what devices are present.
@@ -155,7 +155,7 @@ function createPeerConnection() {
 		alert('Cannot create RTCPeerConnection object.');
 		return;
 	}
-	pc.onaddstream = handleRemoteStreamAdded;
+	pc.onaddstream    = handleRemoteStreamAdded;
 	pc.onremovestream = handleRemoteStreamRemoved;
 
 	if (isInitiator) {

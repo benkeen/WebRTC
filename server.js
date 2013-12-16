@@ -12,15 +12,6 @@ var usersGroupedByRoom = {};
 
 io.sockets.on('connection', function(socket) {
 
-	/*
-	 socket.on('message', function (message) {
-	 log('Got message:', message);
-
-	 // for a real app, would be room only (not broadcast)
-	 socket.broadcast.emit('message', message);
-	 });
-	 */
-
 	socket.on("createOrJoin", function(info) {
 		var room = info.room;
 		var user = info.user;
@@ -86,6 +77,21 @@ io.sockets.on('connection', function(socket) {
 		}
 	});
 
+
+	socket.on("message", function(info) {
+		var room    = info.room;
+		var message = info.message;
+		log('Got message:', message);
+
+		// submit the message to anyone else in the room
+		io.sockets.in(room).emit('message', {
+			message: message
+		});
+	});
+
+	// --------------------------------------------------------------------------------------------------------
+
+	// helpers
 
 	// convenience function to log server messages on the client
 	function log() {
